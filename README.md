@@ -18,7 +18,7 @@
 
 ## 下载及启用方法
 
-1. 从此网页右方的Release下载exe文件
+1. 从网页右边的[Release](https://github.com/CloudTracey/arknights-frame-assistant/releases)下载exe文件
 2. 与游戏一同启动（没有先后顺序要求）
 3. 对所希望修改的按键和设置进行自定义
 4. 点击保存设置或应用设置，即可在游戏中生效
