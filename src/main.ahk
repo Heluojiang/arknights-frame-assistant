@@ -531,13 +531,8 @@ HotkeyOn() {
         try Hotkey(AppSettings["33ms"], Action33ms, "On")
     if (AppSettings["166ms"] != "")
         try Hotkey(AppSettings["166ms"], Action166ms, "On")
-<<<<<<< HEAD
-    if (AppSettings["Pauseselect"] != "")
-        try Hotkey(AppSettings["Pauseselect"], ActionPauseselect, "On")
-=======
     if (AppSettings["PauseSelect"] != "")
         try Hotkey(AppSettings["PauseSelect"], ActionPauseSelect, "On")
->>>>>>> b73bc4d6ff707f79961e06b78d8aa7975ee57ed1
     if (AppSettings["OneClickSkill"] != "")
         try Hotkey(AppSettings["OneClickSkill"], ActionOneClickSkill, "On")
     if (AppSettings["OneClickRetreat"] != "")
@@ -567,13 +562,8 @@ HotkeyOff() {
         try Hotkey(AppSettings["33ms"], Action33ms, "Off")
     if (AppSettings["166ms"] != "")
         try Hotkey(AppSettings["166ms"], Action166ms, "Off")
-<<<<<<< HEAD
-    if (AppSettings["Pauseselect"] != "")
-        try Hotkey(AppSettings["Pauseselect"], ActionPauseselect, "Off")
-=======
     if (AppSettings["PauseSelect"] != "")
         try Hotkey(AppSettings["PauseSelect"], ActionPauseSelect, "Off")
->>>>>>> b73bc4d6ff707f79961e06b78d8aa7975ee57ed1
     if (AppSettings["OneClickSkill"] != "")
         try Hotkey(AppSettings["OneClickSkill"], ActionOneClickSkill, "Off")
     if (AppSettings["OneClickRetreat"] != "")
