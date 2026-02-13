@@ -7,7 +7,6 @@ ProcessSetPriority "Realtime"
 SendMode "Input"
 SetKeyDelay -1, -1
 SetMouseDelay -1
-SetControlDelay -1
 SetWinDelay -1
 SetDefaultMouseSpeed 0
 SetTitleMatchMode 3
@@ -82,12 +81,12 @@ ActionPause(ThisHotkey) {
     Send "{ESC Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 松开暂停
 ReleasePause(ThisHotkey) {
     if InStr(ThisHotkey, "Wheel") == 0 {
-        KeyWait(ThisHotkey)
+        PureKeyWait(ThisHotkey)
     }
     Send "{ESC Down}"
     USleep(Delay)
@@ -103,7 +102,7 @@ ActionGameSpeed(ThisHotkey) {
     Send "{g Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 前进33ms，由于波动，过帧间隔设置为29ms，避免一次过两帧
 Action33ms(ThisHotkey) {
@@ -116,7 +115,7 @@ Action33ms(ThisHotkey) {
     Send "{ESC Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 前进166ms
 Action166ms(ThisHotkey) {
@@ -129,7 +128,7 @@ Action166ms(ThisHotkey) {
     Send "{ESC Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 暂停选中
 ActionPauseselect(ThisHotkey) {
@@ -143,7 +142,7 @@ ActionPauseselect(ThisHotkey) {
     Send "{ESC Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 干员技能
 ActionSkill(ThisHotkey) {
@@ -152,7 +151,7 @@ ActionSkill(ThisHotkey) {
     Send "{e Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 干员撤退
 ActionRetreat(ThisHotkey) {
@@ -161,7 +160,7 @@ ActionRetreat(ThisHotkey) {
     Send "{q Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 一键技能
 ActionOneClickSkill(ThisHotkey) {
@@ -172,7 +171,7 @@ ActionOneClickSkill(ThisHotkey) {
     Send "{e Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 一键撤退
 ActionOneClickRetreat(ThisHotkey) {
@@ -183,7 +182,7 @@ ActionOneClickRetreat(ThisHotkey) {
     Send "{q Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 暂停技能
 ActionPauseSkill(ThisHotkey) {
@@ -200,7 +199,7 @@ ActionPauseSkill(ThisHotkey) {
     Send "{e Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
 ; 暂停撤退
 ActionPauseRetreat(ThisHotkey) {
@@ -217,8 +216,17 @@ ActionPauseRetreat(ThisHotkey) {
     Send "{q Up}"
     if InStr(ThisHotkey, "Wheel")
         return
-    KeyWait(ThisHotkey)
+    PureKeyWait(ThisHotkey)
 }
+
+; 模拟鼠标左键点击
+RbuttonClick(ThisHotkey) {
+    Send "{Click Left}"
+    if InStr(ThisHotkey, "Wheel")
+        return
+    PureKeyWait(ThisHotkey)
+}
+
 ; 高精度延迟
 USleep(delay_ms) {
     static freq := 0
@@ -236,6 +244,12 @@ USleep(delay_ms) {
         if (current >= target)
             break
     }
+}
+
+; 去除修饰符前缀
+PureKeyWait(ThisHotkey) {
+    pureKey := RegExReplace(ThisHotkey, "^[~*$#!^+&]+")
+    KeyWait(pureKey)
 }
 
 ; == GUI 部分 ==
@@ -486,62 +500,62 @@ CancleSetting() {
 HotkeyOn() {
     HotIfWinActive("ahk_exe Arknights.exe") 
     if (AppSettings["PauseA"] != "")
-        try Hotkey(AppSettings["PauseA"], ActionPause, "On")
+        try Hotkey("~" AppSettings["PauseA"], ActionPause, "On")
     if (AppSettings["PauseB"] != "")
-        try Hotkey(AppSettings["PauseB"], ReleasePause, "On")
+        try Hotkey("~" AppSettings["PauseB"], ReleasePause, "On")
         
     if (AppSettings["GameSpeed"] != "")
-        try Hotkey(AppSettings["GameSpeed"], ActionGameSpeed, "On")
+        try Hotkey("~" AppSettings["GameSpeed"], ActionGameSpeed, "On")
     if (AppSettings["Skill"] != "")
-        try Hotkey(AppSettings["Skill"], ActionSkill, "On")
+        try Hotkey("~" AppSettings["Skill"], ActionSkill, "On")
     if (AppSettings["Retreat"] != "")
-        try Hotkey(AppSettings["Retreat"], ActionRetreat, "On")
+        try Hotkey("~" AppSettings["Retreat"], ActionRetreat, "On")
     if (AppSettings["PauseSkill"] != "")
-        try Hotkey(AppSettings["PauseSkill"], ActionPauseSkill, "On")
+        try Hotkey("~" AppSettings["PauseSkill"], ActionPauseSkill, "On")
     if (AppSettings["PauseRetreat"] != "")
-        try Hotkey(AppSettings["PauseRetreat"], ActionPauseRetreat, "On")
+        try Hotkey("~" AppSettings["PauseRetreat"], ActionPauseRetreat, "On")
         
     if (AppSettings["33ms"] != "")
-        try Hotkey(AppSettings["33ms"], Action33ms, "On")
+        try Hotkey("~" AppSettings["33ms"], Action33ms, "On")
     if (AppSettings["166ms"] != "")
-        try Hotkey(AppSettings["166ms"], Action166ms, "On")
+        try Hotkey("~" AppSettings["166ms"], Action166ms, "On")
     if (AppSettings["Pauseselect"] != "")
-        try Hotkey(AppSettings["Pauseselect"], ActionPauseselect, "On")
+        try Hotkey("~" AppSettings["Pauseselect"], ActionPauseselect, "On")
     if (AppSettings["OneClickSkill"] != "")
-        try Hotkey(AppSettings["OneClickSkill"], ActionOneClickSkill, "On")
+        try Hotkey("~" AppSettings["OneClickSkill"], ActionOneClickSkill, "On")
     if (AppSettings["OneClickRetreat"] != "")
-        try Hotkey(AppSettings["OneClickRetreat"], ActionOneClickRetreat, "On")
+        try Hotkey("~" AppSettings["OneClickRetreat"], ActionOneClickRetreat, "On")
     HotIf
 }
 ; 禁用热键
 HotkeyOff() {
     HotIfWinActive("ahk_exe Arknights.exe") 
     if (AppSettings["PauseA"] != "")
-        try Hotkey(AppSettings["PauseA"], ActionPause, "Off")
+        try Hotkey("~" AppSettings["PauseA"], ActionPause, "Off")
     if (AppSettings["PauseB"] != "")
-        try Hotkey(AppSettings["PauseB"], ReleasePause, "Off")
+        try Hotkey("~" AppSettings["PauseB"], ReleasePause, "Off")
         
     if (AppSettings["GameSpeed"] != "")
-        try Hotkey(AppSettings["GameSpeed"], ActionGameSpeed, "Off")
+        try Hotkey("~" AppSettings["GameSpeed"], ActionGameSpeed, "Off")
     if (AppSettings["Skill"] != "")
-        try Hotkey(AppSettings["Skill"], ActionSkill, "Off")
+        try Hotkey("~" AppSettings["Skill"], ActionSkill, "Off")
     if (AppSettings["Retreat"] != "")
-        try Hotkey(AppSettings["Retreat"], ActionRetreat, "Off")
+        try Hotkey("~" AppSettings["Retreat"], ActionRetreat, "Off")
     if (AppSettings["PauseSkill"] != "")
-        try Hotkey(AppSettings["PauseSkill"], ActionPauseSkill, "Off")
+        try Hotkey("~" AppSettings["PauseSkill"], ActionPauseSkill, "Off")
     if (AppSettings["PauseRetreat"] != "")
-        try Hotkey(AppSettings["PauseRetreat"], ActionPauseRetreat, "Off")
+        try Hotkey("~" AppSettings["PauseRetreat"], ActionPauseRetreat, "Off")
         
     if (AppSettings["33ms"] != "")
-        try Hotkey(AppSettings["33ms"], Action33ms, "Off")
+        try Hotkey("~" AppSettings["33ms"], Action33ms, "Off")
     if (AppSettings["166ms"] != "")
-        try Hotkey(AppSettings["166ms"], Action166ms, "Off")
+        try Hotkey("~" AppSettings["166ms"], Action166ms, "Off")
     if (AppSettings["Pauseselect"] != "")
-        try Hotkey(AppSettings["Pauseselect"], ActionPauseselect, "Off")
+        try Hotkey("~" AppSettings["Pauseselect"], ActionPauseselect, "Off")
     if (AppSettings["OneClickSkill"] != "")
-        try Hotkey(AppSettings["OneClickSkill"], ActionOneClickSkill, "Off")
+        try Hotkey("~" AppSettings["OneClickSkill"], ActionOneClickSkill, "Off")
     if (AppSettings["OneClickRetreat"] != "")
-        try Hotkey(AppSettings["OneClickRetreat"], ActionOneClickRetreat, "Off")
+        try Hotkey("~" AppSettings["OneClickRetreat"], ActionOneClickRetreat, "Off")
     HotIf
 }
 
@@ -677,6 +691,9 @@ EndChange(Newkey) {
     if(Newkey != "") {
         if(Newkey == "Escape" OR Newkey == "Backspace") {
             try ControlObj.Value := ""
+        }
+        else if(Newkey == "LWin" OR Newkey == "LWin") {
+            LastEditObject.Value := OriginalValue
         }
         else {
             try ControlObj.Value := Newkey
