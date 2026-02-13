@@ -32,15 +32,19 @@ global KeyNames := Map(
     "PauseSkill",  "暂停技能",
     "PauseRetreat","暂停撤退"
 )
-
-; 其他默认设置
-global DefaultMainSettings := Map()
-DefaultMainSettings["AutoClose"] := "1"
-DefaultMainSettings["AutoOpen"] := "1"
-DefaultMainSettings["Frame"] := "3"
-; 其他设置
-global MainSettings := DefaultMainSettings.Clone()
-
+; 重要默认设置
+global DefaultImportantSettings := Map()
+DefaultImportantSettings["AutoClose"] := "1"
+DefaultImportantSettings["AutoOpen"] := "1"
+DefaultImportantSettings["Frame"] := "3"
+; 重要设置
+global ImportantSettings := DefaultImportantSettings.Clone()
+; 重要设置映射
+global ImportantNames := Map(
+    "AutoClose", "自动退出",
+    "AutoOpen",  "自动打开设置界面",
+    "Frame","游戏内帧数设置"
+)
 ; 游戏状态
 global GameHasStarted := false 
 

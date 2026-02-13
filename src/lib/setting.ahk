@@ -1,34 +1,25 @@
 ﻿; == 设置相关 ==
 ; 从配置文件加载设置
 LoadSettings() {
-    HotKeySettings["PressPause"] := IniRead(INI_FILE, "Hotkeys", "PressPause", DefaultHotKeySettings["PressPause"])
-    HotKeySettings["ReleasePause"] := IniRead(INI_FILE, "Hotkeys", "ReleasePause", DefaultHotKeySettings["ReleasePause"])
-    HotKeySettings["GameSpeed"] := IniRead(INI_FILE, "Hotkeys", "GameSpeed", DefaultHotKeySettings["GameSpeed"])
-    HotKeySettings["Skill"] := IniRead(INI_FILE, "Hotkeys", "Skill", DefaultHotKeySettings["Skill"])
-    HotKeySettings["Retreat"] := IniRead(INI_FILE, "Hotkeys", "Retreat", DefaultHotKeySettings["Retreat"])
-    HotKeySettings["PauseSkill"] := IniRead(INI_FILE, "Hotkeys", "PauseSkill", DefaultHotKeySettings["PauseSkill"])
-    HotKeySettings["PauseRetreat"] := IniRead(INI_FILE, "Hotkeys", "PauseRetreat", DefaultHotKeySettings["PauseRetreat"])
-    HotKeySettings["33ms"] := IniRead(INI_FILE, "Hotkeys", "33ms", DefaultHotKeySettings["33ms"])
-    HotKeySettings["166ms"] := IniRead(INI_FILE, "Hotkeys", "166ms", DefaultHotKeySettings["166ms"])
-    HotKeySettings["PauseSelect"] := IniRead(INI_FILE, "Hotkeys", "PauseSelect", DefaultHotKeySettings["PauseSelect"])
-    HotKeySettings["OneClickSkill"] := IniRead(INI_FILE, "Hotkeys", "OneClickSkill", DefaultHotKeySettings["OneClickSkill"])
-    HotKeySettings["OneClickRetreat"] := IniRead(INI_FILE, "Hotkeys", "OneClickRetreat", DefaultHotKeySettings["OneClickRetreat"])
-    MainSettings["AutoClose"] := IniRead(INI_FILE, "Main", "AutoClose", DefaultMainSettings["AutoClose"])
-    MainSettings["AutoOpen"] := IniRead(INI_FILE, "Main", "AutoOpen", DefaultMainSettings["AutoOpen"])
-    MainSettings["Frame"] := IniRead(INI_FILE, "Main", "Frame", DefaultMainSettings["Frame"])
+    for keyVar, _ in KeyNames {
+        HotKeySettings[keyVar] := IniRead(INI_FILE, "Hotkeys", keyVar, DefaultHotKeySettings[keyVar])
+    }
+    for optionVar, _ in ImportantNames {
+        ImportantSettings[optionVar] := IniRead(INI_FILE, "Main", optionVar, DefaultImportantSettings[optionVar])
+    }
     DelaySetting()
 }
 
 ; 操作延迟设置
 DelaySetting() {
     global Delay
-    if (MainSettings["Frame"] == 1) {
+    if (ImportantSettings["Frame"] == 1) {
         Delay := DelayA
     }
-    else if (MainSettings["Frame"] == 2) {
+    else if (ImportantSettings["Frame"] == 2) {
         Delay := DelayB
     }
-    else if (MainSettings["Frame"] == 3) {
+    else if (ImportantSettings["Frame"] == 3) {
         Delay := DelayC
     }
 }
@@ -109,8 +100,8 @@ CancleSetting() {
     for key, _ in HotkeySettings {
         MyGui[key].Value := HotkeySettings[key]
     }
-    for key, _ in MainSettings {
-        MyGui[key].Value := MainSettings[key]
+    for key, _ in ImportantSettings {
+        MyGui[key].Value := ImportantSettings[key]
     }
     HideGui()
 }
@@ -155,7 +146,7 @@ SetTimer CheckGameStatus, 1000
 ; 检查游戏状态
 CheckGameStatus() {
     global GameHasStarted
-    if (MainSettings["AutoClose"] != "1")
+    if (ImportantSettings["AutoClose"] != "1")
         return
     if WinExist("ahk_exe Arknights.exe") {
         GameHasStarted := true

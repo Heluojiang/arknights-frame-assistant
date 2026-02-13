@@ -40,11 +40,11 @@ AddBindRow("暂停撤退",    "PauseRetreat")
 MyGui.Add("Text", "x15 y+30 w" (GuiWidth - 30) " h1 0x10") ; 水平分割线
 MyGui.Add("Checkbox", "x30 y+20 h24 vAutoClose", " 随游戏进程关闭自动退出（强烈建议开启）")
 MyGui.Add("Checkbox", "x+20 yp h24 vAutoOpen", " 小助手启动时自动打开设置窗口")
-MyGui["AutoClose"].Value := MainSettings["AutoClose"]
-MyGui["AutoOpen"].Value := MainSettings["AutoOpen"]
+MyGui["AutoClose"].Value := ImportantSettings["AutoClose"]
+MyGui["AutoOpen"].Value := ImportantSettings["AutoOpen"]
 MyGui.Add("Text", "x30 y+12", "游戏内帧数:")
 GuiFrame := MyGui.Add("DropDownList", "x+12 y+-18 vFrame AltSubmit", ["30", "60", "120"])
-MyGui["Frame"].Value := MainSettings["Frame"]
+MyGui["Frame"].Value := ImportantSettings["Frame"]
 GuiFrame.OnEvent("Change", (*) => ShowWarning())
 ; 提示语
 MyGui.SetFont("s9 c1b98d7")
@@ -108,6 +108,6 @@ ShowSettings() {
 }
 
 ; 随脚本启动打开GUI界面
-if(MainSettings["AutoOpen"] == 1) {
+if(ImportantSettings["AutoOpen"] == 1) {
     ShowSettings()
 }
