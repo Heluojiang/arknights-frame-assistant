@@ -3,15 +3,13 @@
 #Warn All, Off
 ListLines False
 KeyHistory 0
-ProcessSetPriority "Realtime"
+ProcessSetPriority "High"
 SendMode "Input"
 SetKeyDelay -1, -1
 SetMouseDelay -1
 SetWinDelay -1
 SetDefaultMouseSpeed 0
 SetTitleMatchMode 3
-DllCall("winmm\timeBeginPeriod", "UInt", 1)
-OnExit (*) => DllCall("winmm\timeEndPeriod", "UInt", 1)
 
 ; 获取权限
 if not A_IsAdmin
@@ -42,7 +40,7 @@ DefaultAppSettings["PauseB"] := "Space"
 DefaultAppSettings["GameSpeed"] := "d"
 DefaultAppSettings["33ms"] := "r"
 DefaultAppSettings["166ms"] := "t"
-DefaultAppSettings["Pauseselect"] := "w"
+DefaultAppSettings["PauseSelect"] := "w"
 DefaultAppSettings["Skill"] := "s"
 DefaultAppSettings["Retreat"] := "a"
 DefaultAppSettings["OneClickSkill"] := "e"
@@ -52,6 +50,7 @@ DefaultAppSettings["PauseRetreat"] := "XButton1"
 DefaultAppSettings["AutoClose"] := "1"
 DefaultAppSettings["AutoOpen"] := "1"
 DefaultAppSettings["Frame"] := "3"
+
 ; 按键设置
 global AppSettings := DefaultAppSettings.Clone()
 ; 游戏状态
@@ -230,19 +229,32 @@ RbuttonClick(ThisHotkey) {
 ; 高精度延迟
 USleep(delay_ms) {
     static freq := 0
+    static isHighRes := false
     if (delay_ms <= Delay) {
         delay_ms := Delay
     }
-    if (freq = 0)
+    if (freq = 0) {
         DllCall("QueryPerformanceFrequency", "Int64*", &freq)
+    }
+    if (!isHighRes) {
+        DllCall("winmm\timeBeginPeriod", "UInt", 1)
+        isHighRes := true
+    }
     start := 0
     DllCall("QueryPerformanceCounter", "Int64*", &start)
     target := start + (delay_ms * freq / 1000)
-    current := 0
     Loop {
+        current := 0
         DllCall("QueryPerformanceCounter", "Int64*", &current)
         if (current >= target)
             break
+        remaining := (target - current) * 1000 / freq
+        if (remaining > 2)
+            DllCall("Sleep", "UInt", 1) 
+    }
+    if (isHighRes) {
+        DllCall("winmm\timeEndPeriod", "UInt", 1)
+        isHighRes := false
     }
 }
 
@@ -447,7 +459,7 @@ HotkeyIniWrite() {
     IniWrite(SavedObj.PauseRetreat,INI_FILE, "Hotkeys", "PauseRetreat")
     IniWrite(SavedObj.33ms,    INI_FILE, "Hotkeys", "33ms")
     IniWrite(SavedObj.166ms,   INI_FILE, "Hotkeys", "166ms")
-    IniWrite(SavedObj.Pauseselect, INI_FILE, "Hotkeys", "Pauseselect")
+    IniWrite(SavedObj.PauseSelect, INI_FILE, "Hotkeys", "PauseSelect")
     IniWrite(SavedObj.OneClickSkill,  INI_FILE, "Hotkeys", "OneClickSkill")
     IniWrite(SavedObj.OneClickRetreat, INI_FILE, "Hotkeys", "OneClickRetreat")
     IniWrite(SavedObj.AutoClose, INI_FILE, "Main", "AutoClose")
@@ -500,62 +512,62 @@ CancleSetting() {
 HotkeyOn() {
     HotIfWinActive("ahk_exe Arknights.exe") 
     if (AppSettings["PauseA"] != "")
-        try Hotkey("~" AppSettings["PauseA"], ActionPause, "On")
+        try Hotkey(AppSettings["PauseA"], ActionPause, "On")
     if (AppSettings["PauseB"] != "")
-        try Hotkey("~" AppSettings["PauseB"], ReleasePause, "On")
+        try Hotkey(AppSettings["PauseB"], ReleasePause, "On")
         
     if (AppSettings["GameSpeed"] != "")
-        try Hotkey("~" AppSettings["GameSpeed"], ActionGameSpeed, "On")
+        try Hotkey(AppSettings["GameSpeed"], ActionGameSpeed, "On")
     if (AppSettings["Skill"] != "")
-        try Hotkey("~" AppSettings["Skill"], ActionSkill, "On")
+        try Hotkey(AppSettings["Skill"], ActionSkill, "On")
     if (AppSettings["Retreat"] != "")
-        try Hotkey("~" AppSettings["Retreat"], ActionRetreat, "On")
+        try Hotkey(AppSettings["Retreat"], ActionRetreat, "On")
     if (AppSettings["PauseSkill"] != "")
-        try Hotkey("~" AppSettings["PauseSkill"], ActionPauseSkill, "On")
+        try Hotkey(AppSettings["PauseSkill"], ActionPauseSkill, "On")
     if (AppSettings["PauseRetreat"] != "")
-        try Hotkey("~" AppSettings["PauseRetreat"], ActionPauseRetreat, "On")
+        try Hotkey(AppSettings["PauseRetreat"], ActionPauseRetreat, "On")
         
     if (AppSettings["33ms"] != "")
-        try Hotkey("~" AppSettings["33ms"], Action33ms, "On")
+        try Hotkey(AppSettings["33ms"], Action33ms, "On")
     if (AppSettings["166ms"] != "")
-        try Hotkey("~" AppSettings["166ms"], Action166ms, "On")
-    if (AppSettings["Pauseselect"] != "")
-        try Hotkey("~" AppSettings["Pauseselect"], ActionPauseselect, "On")
+        try Hotkey(AppSettings["166ms"], Action166ms, "On")
+    if (AppSettings["PauseSelect"] != "")
+        try Hotkey(AppSettings["PauseSelect"], ActionPauseSelect, "On")
     if (AppSettings["OneClickSkill"] != "")
-        try Hotkey("~" AppSettings["OneClickSkill"], ActionOneClickSkill, "On")
+        try Hotkey(AppSettings["OneClickSkill"], ActionOneClickSkill, "On")
     if (AppSettings["OneClickRetreat"] != "")
-        try Hotkey("~" AppSettings["OneClickRetreat"], ActionOneClickRetreat, "On")
+        try Hotkey(AppSettings["OneClickRetreat"], ActionOneClickRetreat, "On")
     HotIf
 }
 ; 禁用热键
 HotkeyOff() {
     HotIfWinActive("ahk_exe Arknights.exe") 
     if (AppSettings["PauseA"] != "")
-        try Hotkey("~" AppSettings["PauseA"], ActionPause, "Off")
+        try Hotkey(AppSettings["PauseA"], ActionPause, "Off")
     if (AppSettings["PauseB"] != "")
-        try Hotkey("~" AppSettings["PauseB"], ReleasePause, "Off")
+        try Hotkey(AppSettings["PauseB"], ReleasePause, "Off")
         
     if (AppSettings["GameSpeed"] != "")
-        try Hotkey("~" AppSettings["GameSpeed"], ActionGameSpeed, "Off")
+        try Hotkey(AppSettings["GameSpeed"], ActionGameSpeed, "Off")
     if (AppSettings["Skill"] != "")
-        try Hotkey("~" AppSettings["Skill"], ActionSkill, "Off")
+        try Hotkey(AppSettings["Skill"], ActionSkill, "Off")
     if (AppSettings["Retreat"] != "")
-        try Hotkey("~" AppSettings["Retreat"], ActionRetreat, "Off")
+        try Hotkey(AppSettings["Retreat"], ActionRetreat, "Off")
     if (AppSettings["PauseSkill"] != "")
-        try Hotkey("~" AppSettings["PauseSkill"], ActionPauseSkill, "Off")
+        try Hotkey(AppSettings["PauseSkill"], ActionPauseSkill, "Off")
     if (AppSettings["PauseRetreat"] != "")
-        try Hotkey("~" AppSettings["PauseRetreat"], ActionPauseRetreat, "Off")
+        try Hotkey(AppSettings["PauseRetreat"], ActionPauseRetreat, "Off")
         
     if (AppSettings["33ms"] != "")
-        try Hotkey("~" AppSettings["33ms"], Action33ms, "Off")
+        try Hotkey(AppSettings["33ms"], Action33ms, "Off")
     if (AppSettings["166ms"] != "")
-        try Hotkey("~" AppSettings["166ms"], Action166ms, "Off")
-    if (AppSettings["Pauseselect"] != "")
-        try Hotkey("~" AppSettings["Pauseselect"], ActionPauseselect, "Off")
+        try Hotkey(AppSettings["166ms"], Action166ms, "Off")
+    if (AppSettings["PauseSelect"] != "")
+        try Hotkey(AppSettings["PauseSelect"], ActionPauseSelect, "Off")
     if (AppSettings["OneClickSkill"] != "")
-        try Hotkey("~" AppSettings["OneClickSkill"], ActionOneClickSkill, "Off")
+        try Hotkey(AppSettings["OneClickSkill"], ActionOneClickSkill, "Off")
     if (AppSettings["OneClickRetreat"] != "")
-        try Hotkey("~" AppSettings["OneClickRetreat"], ActionOneClickRetreat, "Off")
+        try Hotkey(AppSettings["OneClickRetreat"], ActionOneClickRetreat, "Off")
     HotIf
 }
 
