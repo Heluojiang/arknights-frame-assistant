@@ -1,6 +1,6 @@
 ﻿; == 全局变量 ==
 ; 版本号
-global Version := "v1.1.0-beta.2"
+global Version := "v1.0.8"
 ; 按键默认设置
 global DefaultHotKeySettings := Map()
 DefaultHotKeySettings["PressPause"] := "f"
