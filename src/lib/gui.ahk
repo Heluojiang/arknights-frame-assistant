@@ -92,9 +92,7 @@ ShowWarning() {
 ; 隐藏GUI
 HideGui(){
     ; 释放可能存在的Hook
-    if(ModifyHook.InProgress) {
-        ModifyHook.Stop()
-    }
+    StopHook()
     MyGui.Hide()
     ; 关闭GUI窗口监控
     SetTimer WatchActiveWindow, 0
