@@ -27,9 +27,8 @@ DelaySetting() {
 
 ; 记录热键并写入配置文件
 HotkeyIniWrite() {
-    if(ModifyHook.InProgress) {
-        ModifyHook.Stop()
-    }
+    ; 释放可能存在的Hook
+    StopHook()
     SavedObj := MyGui.Submit(0) 
     UsedKeys := Map()
     for keyVar, keyName in KeyNames {
