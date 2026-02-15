@@ -46,6 +46,8 @@ if not A_IsAdmin
 
 ; 订阅设置相关事件（需要在GUI初始化之前）
 SubscribeSettingEvents()
+SubscribeHotkeyEvents()
+SubscribeKeyBindEvents()
 
 ; 初始化（需要在 setting 和 hotkey 之后）
 LoadSettings()

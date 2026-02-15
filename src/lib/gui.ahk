@@ -24,6 +24,7 @@ class GuiManager {
             
         ; 窗口设置
         this.WindowName := "明日方舟帧操小助手 ArknightsFrameAssistant - " Constants.Version
+        State.GuiWindowName := this.WindowName
         this.MainGui := Gui(, this.WindowName)
         this.MainGui.Opt("+MinimizeBox")
         this.MainGui.BackColor := "FFFFFF"
@@ -149,6 +150,8 @@ class GuiManager {
     static _SubscribeEvents() {
         EventBus.Subscribe("GuiUpdateControls", (*) => this._UpdateControlsFromConfig())
         EventBus.Subscribe("GuiHide", (*) => this.Hide())
+        EventBus.Subscribe("KeyBindFocusSave", (*) => this.FocusSaveButton())
+        EventBus.Subscribe("GuiHideStopHook", HandleGuiHideStopHook)
     }
     
     ; 显示GUI窗口
@@ -158,9 +161,9 @@ class GuiManager {
         SetTimer WatchActiveWindow, 50
     }
     
-    ; 隐藏GUI窗口
+; 隐藏GUI窗口
     static Hide() {
-        StopHook()
+        EventBus.Publish("GuiHideStopHook")
         this.MainGui.Hide()
         SetTimer WatchActiveWindow, 0
     }
@@ -191,10 +194,15 @@ class GuiManager {
         this.btnSave.Focus()
     }
     
-    ; 获取窗口名称（用于WinActive等）
+; 获取窗口名称（用于WinActive等）
     static GetWindowName() {
         return this.WindowName
     }
+}
+
+; 处理GUI隐藏时停止Hook的事件
+HandleGuiHideStopHook(*) {
+    StopHook()
 }
 
 ; 初始化GUI（在脚本启动时自动调用）

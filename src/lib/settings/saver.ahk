@@ -3,8 +3,7 @@
 
 ; 记录热键并写入配置文件
 HotkeyIniWrite() {
-    ; 释放可能存在的Hook
-    StopHook()
+    EventBus.Publish("SettingsWillSave")
     SavedObj := GuiManager.Submit()
     UsedKeys := Map()
     for keyVar, keyName in Constants.KeyNames {

@@ -34,3 +34,17 @@ HotkeyOff() {
     }
     HotIf
 }
+
+; 订阅热键重载事件
+SubscribeHotkeyEvents() {
+    EventBus.Subscribe("HotkeyReload", HandleHotkeyReload)
+}
+
+; 处理热键重载事件
+HandleHotkeyReload(*) {
+    HotkeyOff()
+    HotkeyIniWrite()
+    LoadSettings()
+    ResetGameStateIfNeeded()
+    HotkeyOn()
+}

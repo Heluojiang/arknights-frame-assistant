@@ -1,5 +1,4 @@
 ; == 按键绑定 == 
-; 写的什么屎山
 ; 在设置窗口监听鼠标左键
 OnMessage(0x0201, WM_LBUTTONDOWN)
 
@@ -17,6 +16,16 @@ StopHook() {
     if(State.ModifyHook.InProgress) {
         State.ModifyHook.Stop()
     }
+}
+
+; 订阅设置保存前事件
+SubscribeKeyBindEvents() {
+    EventBus.Subscribe("SettingsWillSave", HandleSettingsWillSave)
+}
+
+; 处理设置保存前事件
+HandleSettingsWillSave(*) {
+    StopHook()
 }
 
 ; 左键点击判定
@@ -81,7 +90,7 @@ WM_LBUTTONDOWN(wParam, lParam, msg, hwnd) {
 ; 窗口活动监控
 WatchActiveWindow(){
     ; 当窗口失去焦点时
-    if(WinActive(GuiManager.GetWindowName()) == 0) {
+    if(WinActive(State.GuiWindowName) == 0) {
         ; 如果上次点击的是edit控件
         if(State.LastEditObject != "") {
             ; 将上次点击的edit控件还原至点击前的状态
@@ -90,7 +99,7 @@ WatchActiveWindow(){
             State.WaitingModify := false
             ; 释放可能存在的Hook
             StopHook()
-            GuiManager.FocusSaveButton()
+            EventBus.Publish("KeyBindFocusSave")
         }
     }
 }
@@ -105,7 +114,7 @@ EndChange(Newkey) {
             State.ModifyHook.Stop()
         }
         State.WaitingModify := false
-        GuiManager.FocusSaveButton()
+        EventBus.Publish("KeyBindFocusSave")
         return
     }
     ; 若有输入按键且不是鼠标左键
@@ -123,7 +132,7 @@ EndChange(Newkey) {
     State.LastEditObject := ""
     State.WaitingModify := false
     StopHook()
-    GuiManager.FocusSaveButton()
+    EventBus.Publish("KeyBindFocusSave")
 }
 
 ; 鼠标录制

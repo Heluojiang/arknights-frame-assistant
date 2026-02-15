@@ -4,7 +4,7 @@
 ; === 常量定义 ===
 class Constants {
     ; 版本号
-    static Version := "v1.0.9-alpha.1"
+    static Version := "v1.0.9-alpha.2"
     
     ; 延迟常量 (毫秒)
     static DelayA := 35.3      ; 30帧
@@ -176,6 +176,9 @@ class State {
     static OriginalValue := ""
     static ControlObj := ""
     static WaitingModify := false
+    
+    ; GUI窗口名称（用于窗口活动监控）
+    static GuiWindowName := ""
     
     ; 根据帧数设置更新延迟
     static UpdateDelay() {

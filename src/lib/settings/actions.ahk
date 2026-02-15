@@ -15,35 +15,21 @@ HandleSettingsReset(*) {
     Result := MsgBox("  确定重置按键为默认设置吗 ？","重置按键设置", "YesNo")
     if (Result == "Yes") {
         Config.ResetToDefaults()
-        ; 通过事件总线通知GUI更新显示
         EventBus.Publish("GuiUpdateControls")
-        HotkeyOff()
-        HotkeyIniWrite()
-        LoadSettings()
-        ResetGameStateIfNeeded()
-        HotkeyOn()
+        EventBus.Publish("HotkeyReload")
     }
 }
 
 ; 处理保存设置事件
 HandleSettingsSave(*) {
-    HotkeyOff()
-    HotkeyIniWrite()
-    LoadSettings()
-    ResetGameStateIfNeeded()
-    HotkeyOn()
-    ; 通过事件总线通知GUI隐藏
+    EventBus.Publish("HotkeyReload")
     EventBus.Publish("GuiHide")
     MsgBox("设置已保存！后续可从右下角托盘区图标右键菜单打开设置", "保存成功", "Iconi")
 }
 
 ; 处理应用设置事件
 HandleSettingsApply(*) {
-    HotkeyOff()
-    HotkeyIniWrite()
-    LoadSettings()
-    ResetGameStateIfNeeded()
-    HotkeyOn()
+    EventBus.Publish("HotkeyReload")
     MsgBox("设置已应用！", "应用成功")
 }
 
