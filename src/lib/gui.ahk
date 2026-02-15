@@ -32,6 +32,9 @@ class GuiManager {
         ; 创建控件
         this._CreateControls()
         
+        ; 订阅事件
+        this._SubscribeEvents()
+        
         ; 设置托盘菜单
         A_TrayMenu.Delete
         A_TrayMenu.Add("打开按键设置", (*) => this.Show())
@@ -106,13 +109,13 @@ class GuiManager {
         BtnX_Cancel := this.GuiWidth - this.BtnW - 25
         
         this.btnDefault := this.MainGui.Add("Button", "x" BtnX_Default " y+20 w" this.BtnW " h32", "重置按键设置")
-        this.btnDefault.OnEvent("Click", (*) => SetDefaultSetting())
+        this.btnDefault.OnEvent("Click", (*) => EventBus.Publish("SettingsReset"))
         this.btnSave := this.MainGui.Add("Button", "x" BtnX_Save " yp w" this.BtnW " h32 Default", "保存设置")
-        this.btnSave.OnEvent("Click", (*) => SaveAndClose())
+        this.btnSave.OnEvent("Click", (*) => EventBus.Publish("SettingsSave"))
         this.btnApply := this.MainGui.Add("Button", "x" BtnX_Apply " yp w" this.BtnW " h32 Default", "应用设置")
-        this.btnApply.OnEvent("Click", (*) => ApplySettings())
+        this.btnApply.OnEvent("Click", (*) => EventBus.Publish("SettingsApply"))
         this.btnCancel := this.MainGui.Add("Button", "x" BtnX_Cancel " yp w" this.BtnW " h32", "取消")
-        this.btnCancel.OnEvent("Click", (*) => CancleSetting())
+        this.btnCancel.OnEvent("Click", (*) => EventBus.Publish("SettingsCancel"))
         
         ; 空白占位
         this.MainGui.Add("Text", "xm y+15 w1 h1")
@@ -127,9 +130,25 @@ class GuiManager {
         }
     }
     
-    ; 公共：更新警告文本显示（外部调用）
-    static UpdateWarning() {
+    ; 内部：更新所有控件值（从配置）
+    static _UpdateControlsFromConfig() {
+        for key, value in Config.AllHotkeys {
+            try {
+                this.MainGui[key].Value := value
+            }
+        }
+        for key, value in Config.AllImportant {
+            try {
+                this.MainGui[key].Value := value
+            }
+        }
         this._ShowWarning()
+    }
+    
+    ; 内部：订阅事件总线
+    static _SubscribeEvents() {
+        EventBus.Subscribe("GuiUpdateControls", (*) => this._UpdateControlsFromConfig())
+        EventBus.Subscribe("GuiHide", (*) => this.Hide())
     }
     
     ; 显示GUI窗口

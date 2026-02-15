@@ -29,6 +29,9 @@ if not A_IsAdmin
 ; 包含配置管理
 #Include ./lib/config.ahk
 
+; 包含事件总线（需要在其他模块之前）
+#Include ./lib/eventbus.ahk
+
 ; 包含功能实现
 #Include ./lib/actions.ahk
 
@@ -40,6 +43,9 @@ if not A_IsAdmin
 
 ; 包含设置管理（LoadSettings 等）
 #Include ./lib/setting.ahk
+
+; 订阅设置相关事件（需要在GUI初始化之前）
+SubscribeSettingEvents()
 
 ; 初始化（需要在 setting 和 hotkey 之后）
 LoadSettings()
