@@ -1,5 +1,4 @@
 ; == GUI管理器 ==
-; 封装所有GUI相关的变量和操作，消除全局变量依赖
 
 class GuiManager {
     ; GUI实例和控件引用（静态属性）
@@ -20,7 +19,7 @@ class GuiManager {
     ; 初始化GUI（单例模式）
     static Init() {
         if (this.MainGui != "")
-            return  ; 已初始化，直接返回
+            return
             
         ; 窗口设置
         this.WindowName := "明日方舟帧操小助手 ArknightsFrameAssistant - " Version.Get()
@@ -163,7 +162,7 @@ class GuiManager {
         }
     }
     
-; 隐藏GUI窗口
+    ; 隐藏GUI窗口
     static Hide() {
         EventBus.Publish("GuiHideStopHook")
         this.MainGui.Hide()
@@ -198,7 +197,7 @@ class GuiManager {
         this.btnSave.Focus()
     }
     
-; 获取窗口名称（用于WinActive等）
+    ; 获取窗口名称（用于WinActive等）
     static GetWindowName() {
         return this.WindowName
     }
@@ -209,5 +208,5 @@ HandleGuiHideStopHook(*) {
     StopHook()
 }
 
-; 初始化GUI（在脚本启动时自动调用）
+; 初始化GUI
 GuiManager.Init()

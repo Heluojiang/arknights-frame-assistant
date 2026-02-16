@@ -1,15 +1,14 @@
 ; == 全局配置管理 ==
-; 所有配置集中管理，提供类型安全的访问接口
 
-; === 常量定义 ===
+; -- 常量定义 --
 class Constants {
-    ; 延迟常量 (毫秒)
+    ; 延迟常量
     static DelayA := 35.3      ; 30帧
     static DelayB := 19.6      ; 60帧  
     static DelayC := 11.3      ; 120帧
     static SkillAndRetreatDelay := 1
     
-    ; 按键名称映射（只读）
+    ; 按键名称映射
     static KeyNames := Map(
         "PressPause", "额外暂停键A",
         "ReleasePause", "额外暂停键B",
@@ -25,7 +24,7 @@ class Constants {
         "PauseRetreat", "暂停撤退"
     )
     
-    ; 重要设置名称映射（只读）
+    ; 重要设置名称映射
     static ImportantNames := Map(
         "AutoExit", "自动退出",
         "AutoOpenSettings", "自动打开设置界面",
@@ -33,7 +32,7 @@ class Constants {
     )
 }
 
-; === 配置管理 ===
+; -- 配置管理 --
 class Config {
     ; 内部存储
     static _hotkeySettings := Map()
@@ -51,7 +50,7 @@ class Config {
         this.IniFile := configDir "\Settings.ini"
     }
     
-    ; 获取按键设置（带默认值）
+    ; 获取按键设置
     static GetHotkey(key) {
         if !this._isLoaded
             this.LoadFromIni()
@@ -75,7 +74,7 @@ class Config {
         this._importantSettings[key] := value
     }
     
-    ; 从INI加载
+    ; 从配置文件加载
     static LoadFromIni() {
         if this.IniFile = ""
             this.InitPath()
@@ -93,7 +92,7 @@ class Config {
         this._isLoaded := true
     }
     
-    ; 保存到INI
+    ; 保存到配置文件
     static SaveToIni(settingsMap) {
         if this.IniFile = ""
             this.InitPath()
@@ -159,12 +158,12 @@ class Config {
     static AllImportant => this._importantSettings
 }
 
-; === 状态管理 ===
+; -- 状态管理 --
 class State {
     ; 游戏状态
     static GameHasStarted := false
     
-    ; 当前延迟值（由 DelaySetting 计算）
+    ; 当前延迟值
     static CurrentDelay := 11.3  ; 默认120帧
     
     ; 按键绑定状态
@@ -174,7 +173,7 @@ class State {
     static ControlObj := ""
     static WaitingModify := false
     
-    ; GUI窗口名称（用于窗口活动监控）
+    ; GUI窗口名称
     static GuiWindowName := ""
     
     ; 根据帧数设置更新延迟
