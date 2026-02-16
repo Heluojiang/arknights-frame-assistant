@@ -25,6 +25,8 @@ if not A_IsAdmin
     }
     ExitApp
 }
+; 包含版本号
+#Include ./lib/version.ahk
 
 ; 包含配置管理
 #Include ./lib/config.ahk

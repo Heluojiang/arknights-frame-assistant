@@ -3,9 +3,6 @@
 
 ; === 常量定义 ===
 class Constants {
-    ; 版本号
-    static Version := "v1.0.9-alpha.3"
-    
     ; 延迟常量 (毫秒)
     static DelayA := 35.3      ; 30帧
     static DelayB := 19.6      ; 60帧  
