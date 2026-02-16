@@ -34,6 +34,10 @@ if not A_IsAdmin
 ; 包含事件总线
 #Include ./lib/eventbus.ahk
 
+; 包含更新模块
+#Include ./lib/updater/version_checker.ahk
+#Include ./lib/updater/ui.ahk
+
 ; 包含功能实现
 #Include ./lib/hotkey_actions.ahk
 

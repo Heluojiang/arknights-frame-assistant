@@ -6,6 +6,7 @@ class GuiManager {
     static WindowName := ""
     static btnSave := ""
     static btnDefault := ""
+    static btnCheckUpdate := ""
     static btnApply := ""
     static btnCancel := ""
     static GuiFrame := ""
@@ -104,12 +105,15 @@ class GuiManager {
         
         ; 底部按钮
         BtnX_Default := 25
+        BtnX_CheckUpdate := 25 + this.BtnW + 10
         BtnX_Save := this.GuiWidth - (this.BtnW * 3) - 45
         BtnX_Apply := this.GuiWidth - (this.BtnW * 2) - 35
         BtnX_Cancel := this.GuiWidth - this.BtnW - 25
         
         this.btnDefault := this.MainGui.Add("Button", "x" BtnX_Default " y+20 w" this.BtnW " h32", "重置按键设置")
         this.btnDefault.OnEvent("Click", (*) => EventBus.Publish("SettingsReset"))
+        this.btnCheckUpdate := this.MainGui.Add("Button", "x" BtnX_CheckUpdate " yp w" this.BtnW " h32", "检查更新")
+        this.btnCheckUpdate.OnEvent("Click", (*) => EventBus.Publish("CheckUpdateClick"))
         this.btnSave := this.MainGui.Add("Button", "x" BtnX_Save " yp w" this.BtnW " h32 Default", "保存设置")
         this.btnSave.OnEvent("Click", (*) => EventBus.Publish("SettingsSave"))
         this.btnApply := this.MainGui.Add("Button", "x" BtnX_Apply " yp w" this.BtnW " h32 Default", "应用设置")
