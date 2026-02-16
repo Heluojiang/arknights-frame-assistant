@@ -28,7 +28,9 @@ class Constants {
     static ImportantNames := Map(
         "AutoExit", "自动退出",
         "AutoOpenSettings", "自动打开设置界面",
-        "Frame", "游戏内帧数设置"
+        "Frame", "游戏内帧数设置",
+        "AutoUpdate", "自动检查更新",
+        "LastDismissedVersion", "上次忽略的更新版本"
     )
 }
 
@@ -78,7 +80,10 @@ class Config {
     static LoadFromIni() {
         if this.IniFile = ""
             this.InitPath()
-            
+        
+        ; 检查配置文件是否存在
+        fileExists := FileExist(this.IniFile)
+        
         ; 加载按键设置
         for keyVar, defaultVal in this._defaultHotkeys {
             this._hotkeySettings[keyVar] := IniRead(this.IniFile, "Hotkeys", keyVar, defaultVal)
@@ -89,7 +94,30 @@ class Config {
             this._importantSettings[keyVar] := IniRead(this.IniFile, "Main", keyVar, defaultVal)
         }
         
+        ; 如果配置文件不存在，创建并写入默认值
+        if (!fileExists) {
+            this._EnsureConfigFileExists()
+        }
+        
         this._isLoaded := true
+    }
+    
+    ; 确保配置文件存在并包含所有配置项
+    static _EnsureConfigFileExists() {
+        ; 确保目录存在
+        configDir := A_AppData "\ArknightsFrameAssistant\PC"
+        if !DirExist(configDir)
+            DirCreate(configDir)
+        
+        ; 写入所有默认重要设置
+        for keyVar, defaultVal in this._defaultImportant {
+            IniWrite(defaultVal, this.IniFile, "Main", keyVar)
+        }
+        
+        ; 写入所有默认按键设置
+        for keyVar, defaultVal in this._defaultHotkeys {
+            IniWrite(defaultVal, this.IniFile, "Hotkeys", keyVar)
+        }
     }
     
     ; 保存到配置文件
@@ -113,6 +141,22 @@ class Config {
         
         ; 重新加载到内存
         this.LoadFromIni()
+    }
+    
+    ; 保存所有内存中的配置到配置文件（用于非GUI场景）
+    static SaveAllToIni() {
+        if this.IniFile = ""
+            this.InitPath()
+        
+        ; 保存按键设置
+        for keyVar, value in this._hotkeySettings {
+            IniWrite(value, this.IniFile, "Hotkeys", keyVar)
+        }
+        
+        ; 保存重要设置
+        for keyVar, value in this._importantSettings {
+            IniWrite(value, this.IniFile, "Main", keyVar)
+        }
     }
     
     ; 加载默认值
@@ -148,7 +192,9 @@ class Config {
     static _defaultImportant := Map(
         "AutoExit", "1",
         "AutoOpenSettings", "1",
-        "Frame", "3"
+        "Frame", "3",
+        "AutoUpdate", "1",
+        "LastDismissedVersion", ""
     )
     
     ; 获取所有按键设置（用于遍历）
