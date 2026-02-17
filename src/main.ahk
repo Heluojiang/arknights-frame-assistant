@@ -31,32 +31,42 @@ if not A_IsAdmin
 ; 包含配置管理
 #Include ./lib/config.ahk
 
-; 包含事件总线（需要在其他模块之前）
+; 包含事件总线
 #Include ./lib/eventbus.ahk
 
 ; 包含功能实现
 #Include ./lib/hotkey_actions.ahk
 
-; 包含按键绑定（StopHook）
+; 包含按键绑定
 #Include ./lib/key_bind.ahk
 
-; 包含热键控制（HotkeyOn/Off）
+; 包含热键控制
 #Include ./lib/hotkey.ahk
 
-; 包含设置管理（LoadSettings 等）
+; 包含设置管理
 #Include ./lib/setting.ahk
 
-; 订阅设置相关事件（需要在GUI初始化之前）
+; 包含更新模块
+#Include ./lib/updater/version_checker.ahk
+#Include ./lib/updater/downloader.ahk
+#Include ./lib/updater/self_replacer.ahk
+#Include ./lib/updater/updater.ahk
+
+; 订阅设置相关事件
 SubscribeSettingEvents()
 SubscribeHotkeyEvents()
 SubscribeKeyBindEvents()
 
-; 初始化（需要在 setting 和 hotkey 之后）
+; 初始化
 LoadSettings()
 HotkeyOn()
 
-; 包含GUI（需要在 setting 之后，使用 setting 的函数）
+; 包含GUI
 #Include ./lib/gui.ahk
+#Include ./lib/updater/updater_ui.ahk
+
+; 触发应用启动事件（触发自动更新检查）
+EventBus.Publish("AppStarted")
 
 ; 包含游戏监控
 #Include ./lib/game_monitor.ahk

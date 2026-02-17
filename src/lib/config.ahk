@@ -1,15 +1,14 @@
 ; == 全局配置管理 ==
-; 所有配置集中管理，提供类型安全的访问接口
 
-; === 常量定义 ===
+; -- 常量定义 --
 class Constants {
-    ; 延迟常量 (毫秒)
+    ; 延迟常量
     static DelayA := 35.3      ; 30帧
     static DelayB := 19.6      ; 60帧  
     static DelayC := 11.3      ; 120帧
     static SkillAndRetreatDelay := 1
     
-    ; 按键名称映射（只读）
+    ; 按键名称映射
     static KeyNames := Map(
         "PressPause", "额外暂停键A",
         "ReleasePause", "额外暂停键B",
@@ -25,15 +24,17 @@ class Constants {
         "PauseRetreat", "暂停撤退"
     )
     
-    ; 重要设置名称映射（只读）
+    ; 重要设置名称映射
     static ImportantNames := Map(
         "AutoExit", "自动退出",
         "AutoOpenSettings", "自动打开设置界面",
-        "Frame", "游戏内帧数设置"
+        "Frame", "游戏内帧数设置",
+        "AutoUpdate", "自动检查更新",
+        "LastDismissedVersion", "上次忽略的更新版本"
     )
 }
 
-; === 配置管理 ===
+; -- 配置管理 --
 class Config {
     ; 内部存储
     static _hotkeySettings := Map()
@@ -51,7 +52,7 @@ class Config {
         this.IniFile := configDir "\Settings.ini"
     }
     
-    ; 获取按键设置（带默认值）
+    ; 获取按键设置
     static GetHotkey(key) {
         if !this._isLoaded
             this.LoadFromIni()
@@ -75,11 +76,14 @@ class Config {
         this._importantSettings[key] := value
     }
     
-    ; 从INI加载
+    ; 从配置文件加载
     static LoadFromIni() {
         if this.IniFile = ""
             this.InitPath()
-            
+        
+        ; 检查配置文件是否存在
+        fileExists := FileExist(this.IniFile)
+        
         ; 加载按键设置
         for keyVar, defaultVal in this._defaultHotkeys {
             this._hotkeySettings[keyVar] := IniRead(this.IniFile, "Hotkeys", keyVar, defaultVal)
@@ -90,10 +94,33 @@ class Config {
             this._importantSettings[keyVar] := IniRead(this.IniFile, "Main", keyVar, defaultVal)
         }
         
+        ; 如果配置文件不存在，创建并写入默认值
+        if (!fileExists) {
+            this._EnsureConfigFileExists()
+        }
+        
         this._isLoaded := true
     }
     
-    ; 保存到INI
+    ; 确保配置文件存在并包含所有配置项
+    static _EnsureConfigFileExists() {
+        ; 确保目录存在
+        configDir := A_AppData "\ArknightsFrameAssistant\PC"
+        if !DirExist(configDir)
+            DirCreate(configDir)
+        
+        ; 写入所有默认重要设置
+        for keyVar, defaultVal in this._defaultImportant {
+            IniWrite(defaultVal, this.IniFile, "Main", keyVar)
+        }
+        
+        ; 写入所有默认按键设置
+        for keyVar, defaultVal in this._defaultHotkeys {
+            IniWrite(defaultVal, this.IniFile, "Hotkeys", keyVar)
+        }
+    }
+    
+    ; 保存到配置文件
     static SaveToIni(settingsMap) {
         if this.IniFile = ""
             this.InitPath()
@@ -114,6 +141,22 @@ class Config {
         
         ; 重新加载到内存
         this.LoadFromIni()
+    }
+    
+    ; 保存所有内存中的配置到配置文件（用于非GUI场景）
+    static SaveAllToIni() {
+        if this.IniFile = ""
+            this.InitPath()
+        
+        ; 保存按键设置
+        for keyVar, value in this._hotkeySettings {
+            IniWrite(value, this.IniFile, "Hotkeys", keyVar)
+        }
+        
+        ; 保存重要设置
+        for keyVar, value in this._importantSettings {
+            IniWrite(value, this.IniFile, "Main", keyVar)
+        }
     }
     
     ; 加载默认值
@@ -149,7 +192,9 @@ class Config {
     static _defaultImportant := Map(
         "AutoExit", "1",
         "AutoOpenSettings", "1",
-        "Frame", "3"
+        "Frame", "3",
+        "AutoUpdate", "1",
+        "LastDismissedVersion", ""
     )
     
     ; 获取所有按键设置（用于遍历）
@@ -159,12 +204,12 @@ class Config {
     static AllImportant => this._importantSettings
 }
 
-; === 状态管理 ===
+; -- 状态管理 --
 class State {
     ; 游戏状态
     static GameHasStarted := false
     
-    ; 当前延迟值（由 DelaySetting 计算）
+    ; 当前延迟值
     static CurrentDelay := 11.3  ; 默认120帧
     
     ; 按键绑定状态
@@ -174,7 +219,7 @@ class State {
     static ControlObj := ""
     static WaitingModify := false
     
-    ; GUI窗口名称（用于窗口活动监控）
+    ; GUI窗口名称
     static GuiWindowName := ""
     
     ; 根据帧数设置更新延迟

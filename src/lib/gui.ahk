@@ -1,5 +1,4 @@
 ; == GUI管理器 ==
-; 封装所有GUI相关的变量和操作，消除全局变量依赖
 
 class GuiManager {
     ; GUI实例和控件引用（静态属性）
@@ -7,6 +6,7 @@ class GuiManager {
     static WindowName := ""
     static btnSave := ""
     static btnDefault := ""
+    static btnCheckUpdate := ""
     static btnApply := ""
     static btnCancel := ""
     static GuiFrame := ""
@@ -20,7 +20,7 @@ class GuiManager {
     ; 初始化GUI（单例模式）
     static Init() {
         if (this.MainGui != "")
-            return  ; 已初始化，直接返回
+            return
             
         ; 窗口设置
         this.WindowName := "明日方舟帧操小助手 ArknightsFrameAssistant - " Version.Get()
@@ -39,6 +39,7 @@ class GuiManager {
         ; 设置托盘菜单
         A_TrayMenu.Delete
         A_TrayMenu.Add("打开按键设置", (*) => this.Show())
+        A_TrayMenu.Add("重启小助手", (*) => Reload())
         A_TrayMenu.Add("退出", (*) => ExitApp())
         A_TrayMenu.Default := "打开按键设置"
         
@@ -86,8 +87,10 @@ class GuiManager {
         this.MainGui.Add("Text", "x15 y+30 w" (this.GuiWidth - 30) " h1 0x10")
         this.MainGui.Add("Checkbox", "x30 y+20 h24 vAutoExit", " 随游戏进程关闭自动退出（强烈建议开启）")
         this.MainGui.Add("Checkbox", "x+20 yp h24 vAutoOpenSettings", " 小助手启动时自动打开设置窗口")
+        this.MainGui.Add("Checkbox", "x+20 yp h24 vAutoUpdate", " 自动检查更新")
         this.MainGui["AutoExit"].Value := Config.GetImportant("AutoExit")
         this.MainGui["AutoOpenSettings"].Value := Config.GetImportant("AutoOpenSettings")
+        this.MainGui["AutoUpdate"].Value := Config.GetImportant("AutoUpdate")
         this.MainGui.Add("Text", "x30 y+12", "游戏内帧数:")
         this.GuiFrame := this.MainGui.Add("DropDownList", "x+12 y+-18 vFrame AltSubmit", ["30", "60", "120"])
         this.MainGui["Frame"].Value := Config.GetImportant("Frame")
@@ -105,12 +108,15 @@ class GuiManager {
         
         ; 底部按钮
         BtnX_Default := 25
+        BtnX_CheckUpdate := 25 + this.BtnW + 10
         BtnX_Save := this.GuiWidth - (this.BtnW * 3) - 45
         BtnX_Apply := this.GuiWidth - (this.BtnW * 2) - 35
         BtnX_Cancel := this.GuiWidth - this.BtnW - 25
         
         this.btnDefault := this.MainGui.Add("Button", "x" BtnX_Default " y+20 w" this.BtnW " h32", "重置按键设置")
         this.btnDefault.OnEvent("Click", (*) => EventBus.Publish("SettingsReset"))
+        this.btnCheckUpdate := this.MainGui.Add("Button", "x" BtnX_CheckUpdate " yp w" this.BtnW " h32", "检查更新")
+        this.btnCheckUpdate.OnEvent("Click", (*) => EventBus.Publish("CheckUpdateClick"))
         this.btnSave := this.MainGui.Add("Button", "x" BtnX_Save " yp w" this.BtnW " h32 Default", "保存设置")
         this.btnSave.OnEvent("Click", (*) => EventBus.Publish("SettingsSave"))
         this.btnApply := this.MainGui.Add("Button", "x" BtnX_Apply " yp w" this.BtnW " h32 Default", "应用设置")
@@ -163,7 +169,7 @@ class GuiManager {
         }
     }
     
-; 隐藏GUI窗口
+    ; 隐藏GUI窗口
     static Hide() {
         EventBus.Publish("GuiHideStopHook")
         this.MainGui.Hide()
@@ -198,7 +204,7 @@ class GuiManager {
         this.btnSave.Focus()
     }
     
-; 获取窗口名称（用于WinActive等）
+    ; 获取窗口名称（用于WinActive等）
     static GetWindowName() {
         return this.WindowName
     }
@@ -209,5 +215,5 @@ HandleGuiHideStopHook(*) {
     StopHook()
 }
 
-; 初始化GUI（在脚本启动时自动调用）
+; 初始化GUI
 GuiManager.Init()
