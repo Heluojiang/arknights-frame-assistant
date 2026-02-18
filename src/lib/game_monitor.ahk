@@ -6,7 +6,7 @@ SetTimer CheckGameStatus, 1000
 CheckGameStatus() {
     if (Config.GetImportant("AutoExit") != "1")
         return
-    if WinExist("ahk_exe Arknights.exe") {
+    if ProcessExist("Arknights.exe") {
         State.GameHasStarted := true
     }
     else {
