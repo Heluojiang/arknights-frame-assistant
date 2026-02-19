@@ -29,14 +29,23 @@ ActionGameSpeed(ThisHotkey) {
         return
     PureKeyWait(ThisHotkey)
 }
-; 前进33ms，由于波动，过帧间隔设置为29ms，避免一次过两帧
+; 前进33ms，由于波动，过帧间隔设置为30ms，避免一次过两帧
 Action33ms(ThisHotkey) {
+    if !IsMouseInClient()
+        return
+    Pos := PauseButtonPosition()
+    MouseGetPos &xpos, &ypos
+    BlockInput "MouseMove"
+    MouseMove Pos.PBX, Pos.PBY
+    Send "{Lbutton Down}"
+    MouseMove Pos.PBX, Pos.PBY
+    Send "{LButton Up}"
+    USleep(30)
     Send "{ESC Down}"
-    USleep(State.CurrentDelay)
-    Send "{ESC Up}"
-    USleep(29 - State.CurrentDelay)
-    Send "{ESC Down}"
-    USleep(State.CurrentDelay)
+    USleep(15)
+    MouseMove xpos, ypos
+    BlockInput "MouseMoveOff"
+    USleep(30)
     Send "{ESC Up}"
     if InStr(ThisHotkey, "Wheel")
         return
@@ -44,12 +53,21 @@ Action33ms(ThisHotkey) {
 }
 ; 前进166ms
 Action166ms(ThisHotkey) {
+    if !IsMouseInClient()
+        return
+    Pos := PauseButtonPosition()
+    MouseGetPos &xpos, &ypos
+    BlockInput "MouseMove"
+    MouseMove Pos.PBX, Pos.PBY
+    Send "{Lbutton Down}"
+    MouseMove Pos.PBX, Pos.PBY
+    Send "{LButton Up}"
+    USleep(45)
+    MouseMove xpos, ypos
+    BlockInput "MouseMoveOff"
+    USleep(120)
     Send "{ESC Down}"
-    USleep(State.CurrentDelay)
-    Send "{ESC Up}"
-    USleep(166 - State.CurrentDelay)
-    Send "{ESC Down}"
-    USleep(State.CurrentDelay)
+    USleep(45)
     Send "{ESC Up}"
     if InStr(ThisHotkey, "Wheel")
         return
@@ -167,22 +185,16 @@ RbuttonClick(ThisHotkey) {
 ; 高精度延迟
 USleep(delay_ms) {
     static freq := 0
-    static isHighRes := false
-    if (delay_ms <= State.CurrentDelay) {
-        delay_ms := State.CurrentDelay
-    }
-    if (freq = 0) {
+    ;if (delay_ms <= State.CurrentDelay) {
+    ;   delay_ms := State.CurrentDelay
+    ;}
+    if (freq = 0)
         DllCall("QueryPerformanceFrequency", "Int64*", &freq)
-    }
-    if (!isHighRes) {
-        DllCall("winmm\timeBeginPeriod", "UInt", 1)
-        isHighRes := true
-    }
     start := 0
     DllCall("QueryPerformanceCounter", "Int64*", &start)
     target := start + (delay_ms * freq / 1000)
+    current := 0
     Loop {
-        current := 0
         DllCall("QueryPerformanceCounter", "Int64*", &current)
         if (current >= target)
             break
@@ -206,4 +218,11 @@ IsMouseInClient() {
     if ypos < 0
         return false
     return true
+}
+; 获取暂停按钮位置
+PauseButtonPosition() {
+    WinGetClientPos ,, &ww, &wh, "ahk_exe Arknights.exe"
+    PButtonX := ww * 0.9442
+    PButtonY := wh * 0.0666
+    return {PBX: PButtonX, PBY: PButtonY}
 }
