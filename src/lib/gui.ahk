@@ -10,7 +10,6 @@ class GuiManager {
     static btnApply := ""
     static btnCancel := ""
     static GuiFrame := ""
-    static WarningText := ""
     
     ; 窗口尺寸常量
     static GuiWidth := 620
@@ -94,7 +93,6 @@ class GuiManager {
         this.MainGui.Add("Text", "x30 y+12", "游戏内帧数:")
         this.GuiFrame := this.MainGui.Add("DropDownList", "x+12 y+-18 vFrame AltSubmit", ["30", "60", "120"])
         this.MainGui["Frame"].Value := Config.GetImportant("Frame")
-        this.GuiFrame.OnEvent("Change", (*) => this._ShowWarning())
         
         ; 提示语
         this.MainGui.SetFont("s9 c1b98d7")
@@ -102,9 +100,7 @@ class GuiManager {
         this.MainGui.Add("Text", "xm y+10 w" (this.GuiWidth - 30) " Center", "请确保上方“游戏内帧数”设置与游戏内保持一致，且关闭游戏内“垂直同步”")
         this.MainGui.SetFont("s9 cDefault")
         this.MainGui.SetFont("s9 cff2424")
-        this.WarningText := this.MainGui.Add("Text", "xm y+10 w" (this.GuiWidth - 30) " Center", "当前版本的33ms过帧功能对60帧及以下帧率支持较差，请尽量在子弹时间下使用166ms的过帧档")
         this.MainGui.SetFont("s9 cDefault")
-        this._ShowWarning()
         
         ; 底部按钮
         BtnX_Default := 25
@@ -128,15 +124,6 @@ class GuiManager {
         this.MainGui.Add("Text", "xm y+15 w1 h1")
     }
     
-    ; 内部：显示/隐藏警告文本
-    static _ShowWarning() {
-        if (this.GuiFrame.Value == "1" || this.GuiFrame.Value == "2") {
-            this.WarningText.Visible := true
-        } else if (this.WarningText.Visible == true) {
-            this.WarningText.Visible := false
-        }
-    }
-    
     ; 内部：更新所有控件值（从配置）
     static _UpdateControlsFromConfig() {
         for key, value in Config.AllHotkeys {
@@ -149,7 +136,6 @@ class GuiManager {
                 this.MainGui[key].Value := value
             }
         }
-        this._ShowWarning()
     }
     
     ; 内部：订阅事件总线

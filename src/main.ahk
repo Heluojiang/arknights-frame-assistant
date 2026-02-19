@@ -1,5 +1,5 @@
 #Requires AutoHotkey v2.0
-#SingleInstance Force
+#SingleInstance Ignore
 #Warn All, Off
 ListLines False
 KeyHistory 0
@@ -10,6 +10,7 @@ SetMouseDelay -1
 SetWinDelay -1
 SetDefaultMouseSpeed 0
 SetTitleMatchMode 3
+CoordMode "Mouse", "Client"
 DllCall("winmm\timeBeginPeriod", "UInt", 1)
 OnExit (*) => DllCall("winmm\timeEndPeriod", "UInt", 1)
 
